@@ -2,7 +2,13 @@ using Blog.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddControllers(); //suporte a controllers
+builder
+    .Services
+    .AddControllers() //suporte a controllers
+    .ConfigureApiBehaviorOptions(options =>
+    {
+        options.SuppressModelStateInvalidFilter = true; //Desabilita o filtro padrão que retorna 400 Bad Request quando o ModelState é inválido
+    });
 builder.Services.AddDbContext<BlogDataContext>(); //torna o banco de dados um recurso do ASP.NET
 
 var app = builder.Build(); 
