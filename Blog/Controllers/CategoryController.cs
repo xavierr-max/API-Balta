@@ -1,5 +1,6 @@
 ﻿using Blog.Data;
 using Blog.Models;
+using Blog.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -36,49 +37,68 @@ namespace Blog.Controllers
 
         [HttpPost("v1/categories")]
         public async Task<IActionResult> PostAsync(
-            [FromBody] Category model,
+            [FromBody] EditorCategoryViewModel model, //model é o que vai receber os dados do JSON (entrada de dados)
             [FromServices] BlogDataContext context)
         {
             try
             {
-                await context.Categories.AddAsync(model);
+                var category = new Category
+                {
+                    Id = 0,
+                    Name = model.Name, //o category pega o nome que o model recebeu
+                    Slug = model.Slug.ToLower(),
+                };
+                await context.Categories.AddAsync(category);
                 await context.SaveChangesAsync();
 
-                return Created($"v1/categories/{model.Id}", model);
+                return Created($"v1/categories/{category.Id}", category);
                 //cria uma nova categoria no banco com os dados em JSON e cria uma url com seu id
             }
-            catch(DbUpdateException ex)
+            catch (DbUpdateException ex)
             {
                 Console.WriteLine(ex);
-                return StatusCode(500, "Não foi possível incluir a categoria");
+                return StatusCode(500, "EROOR09 - Não foi possível incluir a categoria");
                 //caso não consiga encontrar a categoria, retorna um erro
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
-                return StatusCode(500, "Falha interna no servidor");
+                return StatusCode(500, "EROOR10 - Falha interna no servidor");
             }
         }
 
         [HttpPut("v1/categories/{id:int}")]
         public async Task<IActionResult> PutAsync(
             [FromRoute] int id,
-            [FromBody] Category model,
+            [FromBody] EditorCategoryViewModel model,
             [FromServices] BlogDataContext context)
         {
-            var categories = await context
+            try
+            {
+                var categories = await context
                 .Categories
                 .FirstOrDefaultAsync(x => x.Id == id);
 
-            if (categories == null)
-                return NotFound();
+                if (categories == null)
+                    return NotFound();
 
-            categories.Name = model.Name;
-            categories.Slug = model.Slug;
+                categories.Name = model.Name;
+                categories.Slug = model.Slug;
 
-            context.Categories.Update(categories);
-            await context.SaveChangesAsync();
+                context.Categories.Update(categories);
+                await context.SaveChangesAsync();
 
-            return Created($"v1/categories/{model.Id}", model);
+                return Ok(model);
+            }
+            catch (DbUpdateException ex)
+            {
+                Console.WriteLine(ex);
+                return StatusCode(500, "ERROR08 - Não foi possível incluir a categoria");
+                //caso não consiga encontrar a categoria, retorna um erro
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, "ERROR11 - Falha interna no servidor");
+            }
             //da um update em uma categoria pelo seu id, caso não encontre, retorna com notfound
         }
 
@@ -87,17 +107,30 @@ namespace Blog.Controllers
             [FromRoute] int id,
             [FromServices] BlogDataContext context)
         {
-            var category = await context
-                .Categories
-                .FirstOrDefaultAsync(x => x.Id == id);
+            try
+            {
+                var category = await context
+                    .Categories
+                    .FirstOrDefaultAsync(x => x.Id == id);
 
-            if (category == null)
-                return NotFound();
+                if (category == null)
+                    return NotFound();
 
-            context.Categories.Remove(category);
-            await context.SaveChangesAsync();
+                context.Categories.Remove(category);
+                await context.SaveChangesAsync();
 
-            return Ok(category);
+                return Ok(category);
+            }
+            catch (DbUpdateException ex)
+            {
+                Console.WriteLine(ex);
+                return StatusCode(500, "ERROR07 - Não foi possível incluir a categoria");
+                //caso não consiga encontrar a categoria, retorna um erro
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, "ERROR12 - Falha interna no servidor");
+            }
         }
 
 
