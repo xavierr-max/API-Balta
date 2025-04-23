@@ -3,7 +3,7 @@
 namespace Blog.Controllers
 {
     [ApiController]
-    [Route("")]
+    [Route("v1/health")]
     public class HomeController : ControllerBase
     {
         [HttpGet("")] 
