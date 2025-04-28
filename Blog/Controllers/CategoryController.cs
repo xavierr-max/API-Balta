@@ -10,7 +10,7 @@ namespace Blog.Controllers
     [ApiController]
     public class CategoryController : ControllerBase
     {
-        [HttpGet("v1/categories")] /* localhost:PORT/v1/categories 
+        [HttpGet("v1/categories")] /* localhost:PORT/v1/categories
         SEMPRE USE NO MINÚSCULO E PLURAL É PADRÃO
         o v1 é o versiomaneto do código */
         public async Task<IActionResult> GetAsync( //o async tem função de exercutar várias requisições ao mesmo tempo
@@ -18,10 +18,14 @@ namespace Blog.Controllers
         {
             try
             {
-                var categories = await context.Categories.ToListAsync(); //await vai fazer o método ser concluído, ou seja, ele aguarda o fim da execução
-                return Ok(new ResultViewModel<List<Category>>(categories)); //valida a criacao de um objeto de lista de categoria na classe ResultViewModel
+                var categories =
+                    await context.Categories
+                        .ToListAsync(); //await vai fazer o método ser concluído, ou seja, ele aguarda o fim da execução
+                return
+                    Ok(new ResultViewModel<List<Category>>(
+                        categories)); //valida a criacao de um objeto de lista de categoria na classe ResultViewModel
             }
-            catch 
+            catch
             {
                 return StatusCode(500, new ResultViewModel<List<Category>>("05X04 - Falha interna no servidor"));
                 //caso não consiga encontrar a categoria, retorna um erro
@@ -57,7 +61,7 @@ namespace Blog.Controllers
             [FromBody] EditorCategoryViewModel model, //model é o que vai receber os dados do JSON (entrada de dados)
             [FromServices] BlogDataContext context)
         {
-            if(!ModelState.IsValid)
+            if (!ModelState.IsValid)
                 return BadRequest(new ResultViewModel<Category>(ModelState.GetErrors()));
             try
             {
@@ -79,7 +83,7 @@ namespace Blog.Controllers
                 return StatusCode(500, new ResultViewModel<Category>("EROOR09 - Não foi possível incluir a categoria"));
                 //caso não consiga encontrar a categoria, retorna um erro
             }
-            catch 
+            catch
             {
                 return StatusCode(500, new ResultViewModel<Category>("EROOR10 - Falha interna no servidor"));
             }
@@ -94,8 +98,8 @@ namespace Blog.Controllers
             try
             {
                 var categories = await context
-                .Categories
-                .FirstOrDefaultAsync(x => x.Id == id);
+                    .Categories
+                    .FirstOrDefaultAsync(x => x.Id == id);
 
                 if (categories == null)
                     return NotFound(new ResultViewModel<Category>("Conteúdo não encontrado"));
@@ -151,8 +155,5 @@ namespace Blog.Controllers
                 return StatusCode(500, new ResultViewModel<Category>("ERROR12 - Falha interna no servidor"));
             }
         }
-
-
-
     }
 }
