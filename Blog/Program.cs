@@ -43,6 +43,6 @@ app.UseAuthorization();
 app.MapControllers(); //Faz o ASP.NET escutar e responder os endpoints definidos nos controller
 //Um endpoint = rota + método HTTP (GET, POST, PUT, DELETE).
 
-app.MapGet("/", () => "Código Pendente...");
+app.MapGet("/", () => "Processando...");
 
 app.Run();
